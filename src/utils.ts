@@ -1,3 +1,4 @@
+import { CrcCalculator } from "./crc";
 import type { ChunkTypeArray } from "./types";
 
 export function createFourElementUint8Array(values: number[]): ChunkTypeArray {
@@ -21,4 +22,8 @@ export function isAllASCII(str: string): boolean {
     }
 
     return true;
+}
+
+export function crc(buffer: Buffer): number {
+    return CrcCalculator.crc32(buffer);
 }
