@@ -29,27 +29,35 @@ describe("Chunk", () => {
         expect(chunk.crc).toBe(2882656334);
     });
 
-    test("chunk length", () => {
+    test("length", () => {
         const chunk = testingChunk();
 
         expect(chunk.length).toBe(42);
     });
 
-    test("chunk type", () => {
+    test("type", () => {
         const chunk = testingChunk();
 
         expect(chunk.chunkType.toString()).toBe("RuSt");
     });
 
-    test("chunk string", () => {
+    test("string", () => {
         const chunk = testingChunk();
 
         expect(chunk.dataAsString()).toBe("This is where your secret message will be!");
     });
 
-    test("chunk crc32", () => {
+    test("crc32", () => {
         const chunk = testingChunk();
 
         expect(chunk.crc).toBe(2882656334);
+    });
+
+    test("bytes", () => {
+        const chunk = testingChunk();
+        const bytes = chunk.bytes();
+        const chunkFromBytes = Chunk.tryFrom(bytes);
+
+        expect(chunkFromBytes.crc).toBe(2882656334);
     });
 });

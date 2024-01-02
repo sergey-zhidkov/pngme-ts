@@ -1,10 +1,10 @@
 import { concatArrayBuffers } from "bun";
 import { ChunkType } from "./chunk-type";
-import { crc32, stringToUint8Array, uint8ArrayToString } from "./utils";
+import { crc32, number32ToUint8Array, stringToUint8Array, uint8ArrayToString } from "./utils";
 
 export class Chunk {
     readonly chunkType: ChunkType;
-    private data: Uint8Array;
+    readonly data: Uint8Array;
     readonly crc: number;
 
     /**
@@ -21,12 +21,22 @@ export class Chunk {
         this.crc = crc32(Buffer.from(bytesForCrc));
     }
 
+    get length() {
+        return this.data.length;
+    }
+
     dataAsString() {
         return uint8ArrayToString(this.data);
     }
 
-    get length() {
-        return this.data.length;
+    bytes() {
+        const lengthBytes = number32ToUint8Array(this.length);
+        const chunkTypeBytes = this.chunkType.bytes();
+        const messageBytes = stringToUint8Array(this.dataAsString());
+        const crcBytes = number32ToUint8Array(this.crc);
+        const combinedBytesBuffer = concatArrayBuffers([lengthBytes, chunkTypeBytes, messageBytes, crcBytes]);
+
+        return new Uint8Array(combinedBytesBuffer);
     }
 
     static tryFrom(bytes: Uint8Array): Chunk {
@@ -39,6 +49,10 @@ export class Chunk {
 
         // last 4 bytes are CRC32
         const dataBytes = bytes.slice(8, dataLength - 4);
+        if (chunkLength !== dataBytes.length) {
+            throw new Error("chunk length is not correct");
+        }
+
         const lastBytes = bytes.slice(dataLength - 4);
 
         const expectedCrc = new DataView(lastBytes.buffer).getUint32(0, true);
