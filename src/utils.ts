@@ -24,6 +24,22 @@ export function isAllASCII(str: string): boolean {
     return true;
 }
 
-export function crc(buffer: Buffer): number {
+export function crc32(buffer: Buffer): number {
     return CrcCalculator.crc32(buffer);
+}
+
+export function stringToUint8Array(str: string): Uint8Array {
+    return new TextEncoder("utf-8").encode(str);
+}
+
+export function uint8ArrayToString(data: Uint8Array): string {
+    return new TextDecoder("utf-8").decode(data);
+}
+
+export function number32ToUint8Array(num: number): Uint8Array {
+    const buffer = new ArrayBuffer(4);
+    const view = new DataView(buffer);
+    view.setUint32(0, num, true);
+
+    return new Uint8Array(buffer);
 }

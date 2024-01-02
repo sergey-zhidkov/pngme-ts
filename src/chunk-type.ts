@@ -1,11 +1,11 @@
 import type { ChunkTypeArray } from "./types";
-import { isAllASCII, isNumeric } from "./utils";
+import { isAllASCII, isNumeric, stringToUint8Array, uint8ArrayToString } from "./utils";
 
 export class ChunkType {
     private data: ChunkTypeArray;
 
-    private constructor(bytes: ChunkTypeArray) {
-        this.data = bytes;
+    private constructor(bytes: Uint8Array) {
+        this.data = new Uint8Array(bytes) as ChunkTypeArray;
     }
 
     bytes() {
@@ -38,16 +38,19 @@ export class ChunkType {
     }
 
     toString() {
-        return new TextDecoder("utf-8").decode(this.data);
+        return uint8ArrayToString(this.data);
     }
 
-    static tryFrom(bytes: ChunkTypeArray): ChunkType {
+    static tryFrom(bytes: Uint8Array): ChunkType {
+        if (bytes.length !== 4) {
+            throw new Error("ChunkType should be 4 characters long");
+        }
         return new ChunkType(bytes);
     }
 
     static fromString(str: string): ChunkType {
         if ([...str].length !== 4) {
-            throw new Error("String should be 4 characters long");
+            throw new Error("ChunkType should be 4 characters long");
         }
 
         for (const character of str) {
@@ -59,7 +62,7 @@ export class ChunkType {
             }
         }
 
-        const bytes = new TextEncoder("utf-8").encode(str) as ChunkTypeArray;
+        const bytes = stringToUint8Array(str) as ChunkTypeArray;
         return new ChunkType(bytes);
     }
 }
