@@ -43,3 +43,17 @@ export function number32ToUint8Array(num: number): Uint8Array {
 
     return new Uint8Array(buffer);
 }
+
+export function arraysEqual(a1: Uint8Array, a2: Uint8Array) {
+    if (a1.byteLength !== a2.byteLength) {
+        return false;
+    }
+
+    for (let i = 0; i < a1.length; i++) {
+        if (a1[i] !== a2[i]) {
+            return false;
+        }
+    }
+
+    return true;
+}

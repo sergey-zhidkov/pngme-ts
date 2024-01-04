@@ -1,23 +1,8 @@
 import { describe, test, expect } from "bun:test";
 import { ChunkType } from "./chunk-type";
-import type { ChunkTypeArray } from "./types";
-import { createFourElementUint8Array } from "./utils";
+import { arraysEqual, createFourElementUint8Array } from "./utils";
 
 describe("ChunkType", () => {
-    function arraysEqual(a1: Uint8Array, a2: Uint8Array) {
-        if (a1.byteLength !== a2.byteLength) {
-            return false;
-        }
-
-        for (let i = 0; i < a1.length; i++) {
-            if (a1[i] !== a2[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
     test("from bytes", () => {
         const expected = createFourElementUint8Array([82, 117, 83, 116]);
         const actual = ChunkType.tryFrom(expected);
