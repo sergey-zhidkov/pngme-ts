@@ -18,4 +18,20 @@ To run test:
 bun test
 ```
 
-This project was created using `bun init` in bun v1.0.20. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
+TO RUN FROM BUN ENV
+
+```bash
+bun run index.ts print ./test-icon.png
+```
+
+```bash
+bun run index.ts encode ./test-icon.png-copy.png ruSt "My secret message!"
+```
+
+```bash
+bun run index.ts decode ./test-icon.png-copy.png ruSt
+```
+
+```bash
+bun run index.ts remove ./test-icon.png-copy.png ruSt
+```
