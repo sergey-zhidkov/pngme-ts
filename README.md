@@ -1,5 +1,7 @@
 # pngme-ts
 
+Typescript implementation of https://jrdngr.github.io/pngme_book/introduction.html
+
 To install dependencies:
 
 ```bash
