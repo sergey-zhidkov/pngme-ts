@@ -39,7 +39,7 @@ export function uint8ArrayToString(data: Uint8Array): string {
 export function number32ToUint8Array(num: number): Uint8Array {
     const buffer = new ArrayBuffer(4);
     const view = new DataView(buffer);
-    view.setUint32(0, num, true);
+    view.setUint32(0, num, false);
 
     return new Uint8Array(buffer);
 }

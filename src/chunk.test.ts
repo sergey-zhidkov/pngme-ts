@@ -2,7 +2,6 @@ import { describe, test, expect } from "bun:test";
 import { ChunkType } from "./chunk-type";
 import { number32ToUint8Array, stringToUint8Array } from "./utils";
 import { Chunk } from "./chunk";
-import { concatArrayBuffers } from "bun";
 
 describe("Chunk", () => {
     function testingChunk() {
@@ -15,7 +14,7 @@ describe("Chunk", () => {
         const chunkTypeBytes = stringToUint8Array(chunkType);
         const messageBytes = stringToUint8Array(message);
         const crcBytes = number32ToUint8Array(crc);
-        const combinedBytesBuffer = concatArrayBuffers([lengthBytes, chunkTypeBytes, messageBytes, crcBytes]);
+        const combinedBytesBuffer = Buffer.concat([lengthBytes, chunkTypeBytes, messageBytes, crcBytes]);
 
         return Chunk.tryFrom(new Uint8Array(combinedBytesBuffer));
     }

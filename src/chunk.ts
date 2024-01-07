@@ -1,4 +1,3 @@
-import { concatArrayBuffers } from "bun";
 import { ChunkType } from "./chunk-type";
 import { crc32, number32ToUint8Array, stringToUint8Array, uint8ArrayToString } from "./utils";
 
@@ -17,7 +16,7 @@ export class Chunk {
         this.chunkType = chunkType;
 
         // concatenate chunkType and message arrays to calculate CRC32
-        const bytesForCrc = concatArrayBuffers([chunkType.bytes(), this.data]);
+        const bytesForCrc = Buffer.concat([chunkType.bytes(), this.data]);
         this.crc = crc32(Buffer.from(bytesForCrc));
     }
 
@@ -32,17 +31,17 @@ export class Chunk {
     bytes() {
         const lengthBytes = number32ToUint8Array(this.length);
         const chunkTypeBytes = this.chunkType.bytes();
-        const messageBytes = stringToUint8Array(this.dataAsString());
+        const messageBytes = this.data;
         const crcBytes = number32ToUint8Array(this.crc);
-        const combinedBytesBuffer = concatArrayBuffers([lengthBytes, chunkTypeBytes, messageBytes, crcBytes]);
+        const combinedBytesBuffer = Buffer.concat([lengthBytes, chunkTypeBytes, messageBytes, crcBytes]);
 
         return new Uint8Array(combinedBytesBuffer);
     }
 
     static tryFrom(bytes: Uint8Array): Chunk {
-        const dataLength = bytes.length;
+        const dataLength = bytes.byteLength;
         const first4 = bytes.slice(0, 4);
-        const chunkLength = new DataView(first4.buffer).getUint32(0, true);
+        const chunkLength = new DataView(first4.buffer).getUint32(0, false);
 
         const second4 = bytes.slice(4, 8);
         const chunkType = ChunkType.tryFrom(second4);
@@ -55,8 +54,8 @@ export class Chunk {
 
         const lastBytes = bytes.slice(dataLength - 4);
 
-        const expectedCrc = new DataView(lastBytes.buffer).getUint32(0, true);
-        const combinedBytes = concatArrayBuffers([chunkType.bytes(), dataBytes]);
+        const expectedCrc = new DataView(lastBytes.buffer).getUint32(0, false);
+        const combinedBytes = Buffer.concat([chunkType.bytes(), dataBytes]);
         const actualCrc = crc32(Buffer.from(combinedBytes));
 
         if (actualCrc !== expectedCrc) {
